@@ -13,45 +13,23 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "app_schedule.db"
-        ).build()
-    }
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app_schedule.db").build()
 
     @Provides
-    fun provideScheduleDao(database: AppDatabase): ScheduleDao {
-        return database.scheduleDao()
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object RepositoryModule {
+    fun provideScheduleDao(database: AppDatabase): ScheduleDao = database.scheduleDao()
 
     @Provides
-    fun provideScheduleRepository(
-        @ApplicationContext context: Context, // Provide Context
-        dao: ScheduleDao // Provide ScheduleDao
-    ): ScheduleRepository {
-        return ScheduleRepository(context, dao) // Pass both parameters
-    }
-}
+    fun provideScheduleRepository(dao: ScheduleDao,@ApplicationContext context: Context): ScheduleRepository =
+        ScheduleRepository(context,dao)
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ApplicationModule {
     @Provides
-    fun provideAlarmManager(@ApplicationContext context: Context): AlarmManager {
-        return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    }
+    fun provideAlarmManager(@ApplicationContext context: Context): AlarmManager =
+        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 }
