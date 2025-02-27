@@ -2,32 +2,51 @@ package com.nakibul.android.appscheduler.data.repository
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.util.Log
 import com.nakibul.android.appscheduler.data.db.ScheduleDao
 import com.nakibul.android.appscheduler.models.AppInfo
 import com.nakibul.android.appscheduler.models.AppSchedule
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class ScheduleRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val dao: ScheduleDao
+    @ApplicationContext private val context: Context, private val dao: ScheduleDao
 ) {
     val allSchedules = dao.getAll()
 
-    suspend fun insert(schedule: AppSchedule): Long = dao.insert(schedule)
-    suspend fun update(schedule: AppSchedule) = dao.update(schedule)
-    suspend fun delete(schedule: AppSchedule) = dao.delete(schedule)
+    fun getPendingSchedules() = dao.getPendingSchedules()
+
+    suspend fun insert(schedule: AppSchedule): Long {
+        return dao.insert(schedule)
+    }
+
+    suspend fun update(schedule: AppSchedule) {
+        dao.update(schedule)
+    }
+
+    suspend fun delete(schedule: AppSchedule) {
+        dao.delete(schedule)
+    }
+
     suspend fun getScheduleById(scheduleId: Long): AppSchedule? {
         return dao.getScheduleById(scheduleId)
     }
+
     suspend fun markAsExecuted(scheduleId: Long) {
         dao.markAsExecuted(scheduleId)
     }
+
     suspend fun isScheduleExecuted(scheduleId: Long): Boolean {
         val schedule = dao.getScheduleById(scheduleId)
+        Log.d(
+            "ScheduleRepository",
+            "Checking if schedule $scheduleId is executed: ${schedule?.isExecuted}"
+        )
         return schedule?.isExecuted ?: false
     }
+
     /* get all the installed app including system installed app*/
     fun getAllInstalledApps(): List<AppInfo> {
         val packageManager = context.packageManager
@@ -39,14 +58,10 @@ class ScheduleRepository @Inject constructor(
             val icon = packageInfo.applicationInfo?.loadIcon(packageManager)
             icon?.let {
                 AppInfo(
-                    packageName = packageInfo.packageName,
-                    appName = appName,
-                    icon = it
+                    packageName = packageInfo.packageName, appName = appName, icon = it
                 )
             }?.let {
-                installedApps.add(
-                    it
-                )
+                installedApps.add(it)
             }
         }
 
@@ -55,6 +70,7 @@ class ScheduleRepository @Inject constructor(
 
     /*get all the installed app excluding system installed app*/
     fun getInstalledApps(): List<AppInfo> {
+        Log.d("ScheduleRepository", "Getting installed apps")
         val packageManager = context.packageManager
         val installedApps = mutableListOf<AppInfo>()
 
@@ -65,9 +81,7 @@ class ScheduleRepository @Inject constructor(
                 val icon = packageInfo.applicationInfo?.loadIcon(packageManager)
                 icon?.let {
                     AppInfo(
-                        packageName = packageInfo.packageName,
-                        appName = appName,
-                        icon = it
+                        packageName = packageInfo.packageName, appName = appName, icon = it
                     )
                 }?.let {
                     installedApps.add(it)

@@ -85,7 +85,7 @@ fun ScheduleListScreen(
             }
 
             FloatingActionButton(
-                containerColor = Color.Magenta,
+                containerColor = Color.Red,
                 contentColor = Color.White,
                 elevation = FloatingActionButtonDefaults.elevation(),
                 shape = CircleShape,
@@ -168,12 +168,12 @@ fun ScheduleItem(
                 )
                 // Scheduled Time
                 Text(
-                    text = java.text.SimpleDateFormat("hh:mm a")
+                    text = "Schedule for: " + java.text.SimpleDateFormat("hh:mm:ss a")
                         .format(java.util.Date(schedule.scheduledTime)),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Status: ",
@@ -185,8 +185,8 @@ fun ScheduleItem(
                         color = if (!schedule.isExecuted) Color.Green else Color.Red
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                if (schedule.isExecuted) {
+                Spacer(modifier = Modifier.width(24.dp))
+                if (!schedule.isExecuted) {
                     Icon(
                         modifier = Modifier.clickable {
                             onUpdate(schedule.scheduledTime)

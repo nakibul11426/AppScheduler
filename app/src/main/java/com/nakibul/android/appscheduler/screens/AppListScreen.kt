@@ -88,7 +88,7 @@ fun AppListScreen(
 fun InstalledAppItem(
     modifier: Modifier = Modifier,
     app: AppInfo,
-    onSchedule: (AppInfo, Long) -> Unit // Change to accept time as a parameter
+    onSchedule: (AppInfo, Long) -> Unit
 ) {
     val showDialog = remember { mutableStateOf(false) }
 
@@ -97,7 +97,7 @@ fun InstalledAppItem(
             app = app,
             onDismiss = { showDialog.value = false },
             onSchedule = { selectedTime ->
-                onSchedule(app, selectedTime) // Pass the selected time to the parent
+                onSchedule(app, selectedTime)
             }
         )
     }

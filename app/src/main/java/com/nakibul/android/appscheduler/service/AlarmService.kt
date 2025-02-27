@@ -1,4 +1,4 @@
-package com.nakibul.android.appscheduler
+package com.nakibul.android.appscheduler.service
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.nakibul.android.appscheduler.broadcastreceiver.AlarmReceiver
 import com.nakibul.android.appscheduler.data.repository.ScheduleRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -33,8 +34,9 @@ class AlarmService : Service() {
                 if (!isExecuted) {
                     // Launch the scheduled app
                     val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+
                     launchIntent?.let {
-                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_INCLUDE_STOPPED_PACKAGES
                         startActivity(it)
                         Log.d("AlarmService", "App launched: $packageName")
                     }
